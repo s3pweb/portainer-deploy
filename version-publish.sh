@@ -2,7 +2,6 @@
 
 echo "$2 - Branch is $1"
 
-cp .npmrc_config .npmrc
 # Init GIT info
 git config --global push.default simple
 git config user.name "$BITBUCKET_USERNAME"
