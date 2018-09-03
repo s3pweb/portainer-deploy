@@ -14,7 +14,7 @@ if [[ $1 = master ]]; then
     npm version minor -m "ci: updated version to %s";
     declare -x VERSION=$(jq -r '.version' package.json);
     sed s/:\\\${IMAGE_TAG}/:$VERSION/g docker-compose-TEMPLATE.yaml > docker-compose.yaml;
-    git commit -a -m "ci: updated docker-compose to version %s";
+    git commit -a -m "ci: updated docker-compose to version ${VERSION}";
 fi
 
 if [[ $1 = develop ]]; then
