@@ -57,6 +57,7 @@ declare -x RESPONSE=$(curl --header "Content-Type:application/json" \
       \"Name\": \"$1\",
       \"SwarmID\": \"${PORTAINER_SWARMID}\",
       \"RepositoryURL\": \"https://bitbucket.org/s3pweb/$3\",
+      \"RepositoryReferenceName\": \"refs/heads/$4\",
       \"ComposeFilePathInRepository\": \"${COMPOSE_FILE}\",
       \"RepositoryAuthentication\": true,
       \"RepositoryUsername\": \"${BITBUCKET_EMAIL}\",
