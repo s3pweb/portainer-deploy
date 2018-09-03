@@ -12,15 +12,12 @@ apt-get update && apt-get install -y jq;
 # Update minor version, tag and commit
 if [[ $1 = master ]]; then
     npm version minor -m "ci: updated version to %s";
-else
-    npm version patch -m "ci: updated version to %s";
-fi;
-
-if [[ $1 = master ]]; then
     git tag;
     git remote -v;
     git push origin --tags;
-fi
+else
+    npm version patch -m "ci: updated version to %s";
+fi;
 
 # Build and push to Docker hub
 declare -x VERSION=$(jq -r '.version' package.json);
