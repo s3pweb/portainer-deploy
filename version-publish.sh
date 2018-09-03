@@ -7,9 +7,14 @@ git config --global push.default simple
 git config user.name "$BITBUCKET_USERNAME"
 git config user.email "$BITBUCKET_EMAIL"
 
+apt-get update && apt-get install -y jq;
+
 # Update minor version, tag and commit
 if [[ $1 = master ]]; then
     npm version minor -m "ci: updated version to %s";
+    declare -x VERSION=$(jq -r '.version' package.json);
+    sed s/:\\\${IMAGE_TAG}/:$VERSION/g docker-compose-TEMPLATE.yaml > docker-compose.yaml;
+    git commit -a -m "ci: updated docker-compose to version %s";
 fi
 
 if [[ $1 = develop ]]; then
@@ -25,8 +30,6 @@ if [[ $1 = master ]]; then
     git remote -v;
     git push origin --tags;
 fi
-
-apt-get update && apt-get install -y jq;
 
 # Build and push to Docker hub
 declare -x VERSION=$(jq -r '.version' package.json);
