@@ -11,7 +11,7 @@ if [[ $2 = "PROD" ]]; then
 else
     echo "Setting portainer ENV to DEV"
     declare -x PORTAINER_USER=${DEV_PORTAINER_USER}
-    declare -x PORTAINER_PASSWORD=${DEV_PORTAINER_URL}
+    declare -x PORTAINER_PASSWORD=${DEV_PORTAINER_PASSWORD}
     declare -x PORTAINER_URL=${DEV_PORTAINER_URL}
     declare -x PORTAINER_SWARMID=${DEV_PORTAINER_SWARMID}
     declare -x COMPOSE_FILE="./docker-compose-DEV.yaml"
@@ -21,28 +21,36 @@ fi;
 apt-get update && apt-get install -y jq
 
 # Log in to portainer API to get the TOKEN
-declare -x RESPONSE=$(curl -s --header "Content-Type:application/json" \
+declare -x RESPONSE
+
+RESPONSE=$(curl -s --header "Content-Type:application/json" \
     --request POST \
     --data '{"Username":"'${PORTAINER_USER}'","Password":"'${PORTAINER_PASSWORD}'"}' \
     "${PORTAINER_URL}/api/auth")
 
-declare -x ERR=$(jq -r '.err' <<< ${RESPONSE})
+declare -x ERR
+
+ERR=$(jq -r '.err' <<< ${RESPONSE})
 
 if [[ ${ERR} != null ]]; then exit 1; fi
 
-declare -x TOKEN=$(jq -r '.jwt' <<< ${RESPONSE})
+declare -x TOKEN
+
+TOKEN=$(jq -r '.jwt' <<< ${RESPONSE})
 
 # Check if the stack already exist
-declare -x RESPONSE=$(curl --header "Content-Type:application/json" \
+RESPONSE=$(curl --header "Content-Type:application/json" \
     --header "Authorization:Bearer ${TOKEN}" \
     --request GET "${PORTAINER_URL}/api/stacks")
 
-declare -x INDEX=$(jq -r '.[] | select(.Name == "'$1'") | .Id' <<< ${RESPONSE})
+declare -x INDEX
+
+INDEX=$(jq -r '.[] | select(.Name == "'$1'") | .Id' <<< ${RESPONSE})
 
 if [[ ${INDEX} != "" ]]; then
     echo "Removing old stack"
     echo
-    declare -x RESPONSE=$(curl --header "Content-Type:application/json" \
+    RESPONSE=$(curl --header "Content-Type:application/json" \
         --header "Authorization:Bearer ${TOKEN}" \
         --request DELETE \
         "${PORTAINER_URL}/api/stacks/${INDEX}");
@@ -50,7 +58,7 @@ if [[ ${INDEX} != "" ]]; then
 fi;
 
 # Create the new stack
-declare -x RESPONSE=$(curl --header "Content-Type:application/json" \
+RESPONSE=$(curl --header "Content-Type:application/json" \
     --header "Authorization:Bearer ${TOKEN}" \
     --request POST \
     --data-binary "{
@@ -67,6 +75,6 @@ declare -x RESPONSE=$(curl --header "Content-Type:application/json" \
 
 echo ${RESPONSE}
 
-declare -x ERR=$(jq -r '.err' <<< ${RESPONSE})
+ERR=$(jq -r '.err' <<< ${RESPONSE})
 
 if [[ ${ERR} != null && ${ERR} != "" ]]; then exit 1; fi

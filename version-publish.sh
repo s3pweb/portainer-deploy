@@ -4,8 +4,8 @@ echo "$2 - Branch is $1"
 
 # Init GIT info
 git config --global push.default simple
-git config user.name "$BITBUCKET_USERNAME"
-git config user.email "$BITBUCKET_EMAIL"
+git config user.name "${BITBUCKET_USERNAME}"
+git config user.email "${BITBUCKET_EMAIL}"
 
 apt-get update && apt-get install -y jq;
 
@@ -17,11 +17,13 @@ else
 fi;
 
 # Build and push to Docker hub
-declare -x VERSION=$(jq -r '.version' package.json);
+declare -x VERSION
 
-echo $VERSION;
+VERSION=$(jq -r '.version' package.json);
 
-sed s/:\\\${IMAGE_TAG}/:$VERSION/g docker-compose-TEMPLATE.yaml > docker-compose.yaml;
+echo ${VERSION};
+
+sed s/:\\\${IMAGE_TAG}/:${VERSION}/g docker-compose-TEMPLATE.yaml > docker-compose.yaml;
 
 git commit -a -m "ci: updated docker-compose to version ${VERSION}";
 
@@ -29,8 +31,8 @@ git tag;
 git remote -v;
 git push --follow-tags ;
 
-docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD;
+docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD};
 
-docker build -t s3pweb/$2 -t s3pweb/$2:$VERSION .;
+docker build -t s3pweb/$2 -t s3pweb/$2:${VERSION} .;
 
 docker push s3pweb/$2;
