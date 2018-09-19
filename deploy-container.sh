@@ -17,13 +17,15 @@ else
     declare -x COMPOSE_FILE="./docker-compose-DEV.yaml"
 fi;
 
-echo "Installing JQ"
+echo
+echo ">>> Step: Installing JQ"
 echo
 
 # Install JQ to process JSON
 apt-get update && apt-get install -y jq
 
-echo "Log in to Portainer"
+echo
+echo ">>> Step: Log in to Portainer"
 echo
 
 # Log in to portainer API to get the TOKEN
@@ -44,7 +46,8 @@ declare -x TOKEN
 
 TOKEN=$(jq -r '.jwt' <<< ${RESPONSE})
 
-echo "Getting all the stacks"
+echo
+echo ">>> Step: Getting all the stacks"
 echo
 
 # Check if the stack already exist
@@ -57,7 +60,8 @@ declare -x INDEX
 INDEX=$(jq -r '.[] | select(.Name == "'$1'") | .Id' <<< ${RESPONSE})
 
 if [[ ${INDEX} != "" ]]; then
-    echo "Removing old stack"
+    echo
+    echo ">>> Step: Removing old stack"
     echo
     RESPONSE=$(curl --header "Content-Type:application/json" \
         --header "Authorization:Bearer ${TOKEN}" \
@@ -66,7 +70,8 @@ if [[ ${INDEX} != "" ]]; then
     echo ${RESPONSE}
 fi;
 
-echo "Creating new stack"
+echo
+echo ">>> Step: Creating new stack"
 echo
 
 # Create the new stack
@@ -85,6 +90,7 @@ RESPONSE=$(curl --header "Content-Type:application/json" \
     }" \
     "${PORTAINER_URL}/api/stacks?type=1&method=repository&endpointId=1");
 
+echo
 echo ${RESPONSE}
 
 ERR=$(jq -r '.err' <<< ${RESPONSE})
