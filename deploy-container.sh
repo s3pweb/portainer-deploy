@@ -58,6 +58,7 @@ RESPONSE=$(curl --header "Content-Type:application/json" \
 declare -x INDEX
 
 INDEX=$(jq -r '.[] | select(.Name == "'$1'") | .Id' <<< ${RESPONSE})
+ENPOINTID=$(jq -r '.[] | select(.Name == "'$1'") | .EndpointId' <<< ${RESPONSE})
 
 if [[ ${INDEX} != "" ]]; then
     echo
@@ -66,7 +67,7 @@ if [[ ${INDEX} != "" ]]; then
     RESPONSE=$(curl --header "Content-Type:application/json" \
         --header "Authorization:Bearer ${TOKEN}" \
         --request DELETE \
-        "${PORTAINER_URL}/api/stacks/${INDEX}");
+        "${PORTAINER_URL}/api/stacks/${INDEX}?external=false&endpointId=${ENPOINTID}");
     echo ${RESPONSE}
 fi;
 
