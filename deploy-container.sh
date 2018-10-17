@@ -7,14 +7,14 @@ if [[ $2 = "PROD" ]]; then
     declare -x PORTAINER_PASSWORD=${PROD_PORTAINER_PASSWORD}
     declare -x PORTAINER_URL=${PROD_PORTAINER_URL}
     declare -x PORTAINER_SWARMID=${PROD_PORTAINER_SWARMID}
-    declare -x COMPOSE_FILE="./docker-compose.yaml"
+    declare -x COMPOSE_FILE="docker-compose.yaml"
 else
     echo "Setting portainer ENV to DEV"
     declare -x PORTAINER_USER=${DEV_PORTAINER_USER}
     declare -x PORTAINER_PASSWORD=${DEV_PORTAINER_PASSWORD}
     declare -x PORTAINER_URL=${DEV_PORTAINER_URL}
     declare -x PORTAINER_SWARMID=${DEV_PORTAINER_SWARMID}
-    declare -x COMPOSE_FILE="./docker-compose-DEV.yaml"
+    declare -x COMPOSE_FILE="docker-compose-DEV.yaml"
 fi;
 
 echo
